@@ -211,6 +211,7 @@ namespace LightSabers
         {
             private static void Postfix()
             {
+                /* Tell the SFX to respect audio mixer of the game */
                 GameObject saberhit = ZNetScene.instance.GetPrefab("sfx_saber_hit");
                 GameObject saberswing = ZNetScene.instance.GetPrefab("sfx_saber_swing");
                 
@@ -224,7 +225,7 @@ namespace LightSabers
                 catch
                 {
                     LSLogger.LogError(
-                        "AudioMan.instance.m_ambientMixer could not be assigned on outputAudioMixerGroup of sab");
+                        "AudioMan.instance.m_ambientMixer could not be assigned on outputAudioMixerGroup of saber sfx");
                 }
             }
         }
