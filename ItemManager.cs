@@ -479,12 +479,22 @@ namespace ItemManager
 		}
 
 		private static readonly List<GameObject> prefabs = new();
+		private static readonly List<GameObject> sfxprefabs = new();
 
 		public static GameObject RegisterPrefab(AssetBundle assets, string prefabName)
 		{
 			GameObject prefab = assets.LoadAsset<GameObject>(prefabName);
 
 			prefabs.Add(prefab);
+
+			return prefab;
+		}
+		
+		public static GameObject RegisterSfxPrefabs(AssetBundle assets, string prefabName)
+		{
+			GameObject prefab = assets.LoadAsset<GameObject>(prefabName);
+
+			sfxprefabs.Add(prefab);
 
 			return prefab;
 		}
@@ -509,6 +519,11 @@ namespace ItemManager
 			foreach (GameObject prefab in prefabs)
 			{
 				__instance.m_prefabs.Add(prefab);
+			}
+			
+			foreach (GameObject sfxprefab in sfxprefabs)
+			{
+				__instance.m_prefabs.Add(sfxprefab);
 			}
 		}
 	}

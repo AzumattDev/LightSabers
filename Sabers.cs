@@ -15,7 +15,7 @@ namespace LightSabers
     public class LightSabers : BaseUnityPlugin
     {
         internal const string ModName = "LightSabers";
-        internal const string ModVersion = "1.0.0";
+        internal const string ModVersion = "1.0.2";
         private const string ModGUID = "odinplus.LightSabers";
         private readonly Harmony _harmony = new(ModGUID);
         internal static readonly ManualLogSource LSLogger = BepInEx.Logging.Logger.CreateLogSource(ModName);
@@ -47,8 +47,9 @@ namespace LightSabers
         public void Awake()
         {
             /* Add SFX */
-            PrefabManager.RegisterPrefab(PrefabManager.RegisterAssetBundle("lightsabers"), "sfx_saber_swing");
-            PrefabManager.RegisterPrefab(PrefabManager.RegisterAssetBundle("lightsabers"), "sfx_saber_hit");
+            PrefabManager.RegisterSfxPrefabs(PrefabManager.RegisterAssetBundle("lightsabers"), "sfx_saber_swing");
+            PrefabManager.RegisterSfxPrefabs(PrefabManager.RegisterAssetBundle("lightsabers"), "sfx_saber_hit");
+            
             /* Add SaberCrystals */
             SaberCrystal_Green = new Item("lightsabers", "SaberCrystal_Green");
             SaberCrystal_Green.Crafting.Add(CraftingTable.Forge, 3);
@@ -211,7 +212,8 @@ namespace LightSabers
         {
             private static void Postfix()
             {
-                /* Tell the SFX to respect audio mixer of the game */
+                /* Tell the SFX to respect audio mixer of the game, this keeps your ears intact. Sometimes custom audio comes in at a much higher volume
+                 than what it sounds like in Unity. */
                 GameObject saberhit = ZNetScene.instance.GetPrefab("sfx_saber_hit");
                 GameObject saberswing = ZNetScene.instance.GetPrefab("sfx_saber_swing");
                 
