@@ -68,9 +68,6 @@
         <Reference Include="BepInEx, Version=5.4.16.0, Culture=neutral, PublicKeyToken=null">
           <HintPath>$(GamePath)\BepInEx\core\BepInEx.dll</HintPath>
         </Reference>
-        <Reference Include="ServerSync, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-          <HintPath>Libs\ServerSync.dll</HintPath>
-        </Reference>
         <Reference Include="System" />
         <Reference Include="System.Core" />
         <Reference Include="System.Data" />
@@ -101,10 +98,6 @@
     </ItemGroup>
     <ItemGroup>
       <EmbeddedResource Include="assets\lightsabers" />
-    </ItemGroup>
-    <ItemGroup>
-      <Content Include="ILRepack.targets" />
-      <Content Include="Libs\ServerSync.dll" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 		 <Target Name="Copy" AfterTargets="Build">

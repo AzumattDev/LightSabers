@@ -7,7 +7,7 @@ using System.Reflection;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using ItemManager;
-using ServerSync;
+//using ServerSync;
 using UnityEngine;
 
 namespace LightSabers
@@ -16,7 +16,7 @@ namespace LightSabers
     public class LightSabers : BaseUnityPlugin
     {
         internal const string ModName = "LightSabers";
-        internal const string ModVersion = "1.0.3";
+        internal const string ModVersion = "1.0.4";
         private const string ModGUID = "odinplus.LightSabers";
         private readonly Harmony _harmony = new(ModGUID);
         internal static readonly ManualLogSource LSLogger = BepInEx.Logging.Logger.CreateLogSource(ModName);
@@ -40,8 +40,8 @@ namespace LightSabers
         private static Item SaberCrystal_Pink;
         private static Item SaberCrystal_Orange;
         
-        private readonly ConfigSync configSync = new(ModName)
-            { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };
+        /*private readonly ConfigSync configSync = new(ModName)
+            { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };*/
         
         private readonly Dictionary<string, ConfigEntry<string>> m_localizedStrings =
             new();
@@ -49,8 +49,8 @@ namespace LightSabers
 
         public void Awake()
         {
-            _serverConfigLocked = config("General", "Force Server Config", true, "Force Server Config");
-            _ = configSync.AddLockingConfigEntry(_serverConfigLocked);
+            /*_serverConfigLocked = Config.Bind("General", "Force Server Config", true, "Force Server Config");
+            _ = configSync.AddLockingConfigEntry(_serverConfigLocked);*/
             
             /* Add SFX */
             PrefabManager.RegisterSfxPrefabs(PrefabManager.RegisterAssetBundle("lightsabers"), "sfx_saber_swing");
@@ -257,7 +257,7 @@ namespace LightSabers
         private static void InitDamageValues(ItemDrop item)
         {
             ItemDrop? itmdrop = item;
-            LSLogger.LogDebug($"Setting damage values for {itmdrop.gameObject.name}");
+            //LSLogger.LogDebug($"Setting damage values for {itmdrop.gameObject.name}");
             itmdrop.m_itemData.m_shared.m_damages.m_damage = baseDamage.Value;
             itmdrop.m_itemData.m_shared.m_toolTier = baseBlunt.Value;
             itmdrop.m_itemData.m_shared.m_damages.m_blunt = baseBlunt.Value;
@@ -345,9 +345,9 @@ namespace LightSabers
 
 
         #region Configs
-        public static ConfigEntry<bool>? _serverConfigLocked;
-        /* Damage */
-        /*private static ConfigEntry<int> baseDamage;
+        /*public static ConfigEntry<bool>? _serverConfigLocked;
+        /* Damage #1#
+        private static ConfigEntry<int> baseDamage;
         private static ConfigEntry<int> baseBlunt;
         private static ConfigEntry<int> baseSlash;
         private static ConfigEntry<int> basePierce;
@@ -375,33 +375,7 @@ namespace LightSabers
         public static ConfigEntry<int> baseKnockbackForce; // knockback force
         private static ConfigEntry<int> baseBackstab; // backstab
         private static ConfigEntry<int> baseDurability;*/
-        private ConfigEntry<T> config<T>(string group, string name, T value, ConfigDescription description,
-            bool synchronizedSetting = true)
-        {
-            ConfigDescription extendedDescription =
-                new(
-                    description.Description +
-                    (synchronizedSetting ? " [Synced with Server]" : " [Not Synced with Server]"),
-                    description.AcceptableValues, description.Tags);
-            ConfigEntry<T> configEntry = Config.Bind(group, name, value, extendedDescription);
-            //var configEntry = Config.Bind(group, name, value, description);
-
-            var syncedConfigEntry = configSync.AddConfigEntry(configEntry);
-            syncedConfigEntry.SynchronizedConfig = synchronizedSetting;
-
-            return configEntry;
-        }
-
-        private ConfigEntry<T> config<T>(string group, string name, T value, string description,
-            bool synchronizedSetting = true)
-        {
-            return config(group, name, value, new ConfigDescription(description), synchronizedSetting);
-        }
-
-        private class ConfigurationManagerAttributes
-        {
-            public bool? Browsable = false;
-        }
+        
 
         #endregion
     }
