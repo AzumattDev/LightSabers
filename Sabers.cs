@@ -183,7 +183,7 @@ namespace LightSabers
             localizationFile =
                 new ConfigFile(
                     Path.Combine(Path.GetDirectoryName(Config.ConfigFilePath) ?? throw new InvalidOperationException(),
-                        ModGUID.ToLower() + ".Localization.cfg"), false);
+                        ModGUID + ".Localization.cfg"), false);
             Assembly assembly = Assembly.GetExecutingAssembly();
             _harmony.PatchAll(assembly);
             Localize();

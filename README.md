@@ -65,8 +65,6 @@ v1.1.0
 - Update to my edited version of ItemManager (to allow for damage value configuration). This update was requested by
   Seneo#1307 in Discord.
 - Update some internal code and references.
-- Localization has been moved internally. This means that the localization file is no longer needed. If you have
-  the localization file, you can delete it.
 
 v1.0.4
 
