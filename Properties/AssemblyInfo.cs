@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle(LightSabers.LightSabers.ModName)]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("OdinPlus/Azumatt")]
+[assembly: AssemblyCompany(LightSabers.LightSabers.Author)]
 [assembly: AssemblyProduct(LightSabers.LightSabers.ModName)]
 [assembly: AssemblyCopyright("Copyright ©  2021")]
 [assembly: AssemblyTrademark("")]

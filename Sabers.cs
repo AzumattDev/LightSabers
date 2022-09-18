@@ -7,7 +7,7 @@ using System.Reflection;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using ItemManager;
-//using ServerSync;
+using ServerSync;
 using UnityEngine;
 
 namespace LightSabers
@@ -16,89 +16,93 @@ namespace LightSabers
     public class LightSabers : BaseUnityPlugin
     {
         internal const string ModName = "LightSabers";
-        internal const string ModVersion = "1.0.4";
-        private const string ModGUID = "odinplus.LightSabers";
+        internal const string ModVersion = "1.1.0";
+        internal const string Author = "Azumatt";
+        private const string ModGUID = Author + "." + ModName;
+        private static string ConfigFileName = ModGUID + ".cfg";
+        private static string ConfigFileFullPath = Paths.ConfigPath + Path.DirectorySeparatorChar + ConfigFileName;
         private readonly Harmony _harmony = new(ModGUID);
+        internal static string ConnectionError = "";
         internal static readonly ManualLogSource LSLogger = BepInEx.Logging.Logger.CreateLogSource(ModName);
         private ConfigFile localizationFile;
 
         /* Items */
-        private static Item SaberGreen;
-        private static Item SaberRed;
-        private static Item SaberDark;
-        private static Item SaberBlue;
-        private static Item SaberPurple;
-        private static Item SaberPink;
-        private static Item SaberOrange;
+        // SaberGreen;
+        // SaberRed;
+        // SaberDark;
+        // SaberBlue;
+        // SaberPurple;
+        // SaberPink;
+        // SaberOrange;
 
         /* Crystals */
-        private static Item SaberCrystal_Green;
-        private static Item SaberCrystal_Red;
-        private static Item SaberCrystal_Dark;
-        private static Item SaberCrystal_Blue;
-        private static Item SaberCrystal_Purple;
-        private static Item SaberCrystal_Pink;
-        private static Item SaberCrystal_Orange;
-        
-        /*private readonly ConfigSync configSync = new(ModName)
-            { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };*/
-        
+        // SaberCrystal_Green;
+        // SaberCrystal_Red;
+        // SaberCrystal_Dark;
+        // SaberCrystal_Blue;
+        // SaberCrystal_Purple;
+        // SaberCrystal_Pink;
+        // SaberCrystal_Orange;
+
+        private readonly ConfigSync configSync = new(ModName)
+            { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };
+
         private readonly Dictionary<string, ConfigEntry<string>> m_localizedStrings =
             new();
 
 
         public void Awake()
         {
-            /*_serverConfigLocked = Config.Bind("General", "Force Server Config", true, "Force Server Config");
-            _ = configSync.AddLockingConfigEntry(_serverConfigLocked);*/
-            
+            _serverConfigLocked = Config.Bind("General", "Force Server Config", true, "Force Server Config");
+            _ = configSync.AddLockingConfigEntry(_serverConfigLocked);
+
             /* Add SFX */
-            PrefabManager.RegisterSfxPrefabs(PrefabManager.RegisterAssetBundle("lightsabers"), "sfx_saber_swing");
-            PrefabManager.RegisterSfxPrefabs(PrefabManager.RegisterAssetBundle("lightsabers"), "sfx_saber_hit");
-            
+            PrefabManager.RegisterPrefab(PrefabManager.RegisterAssetBundle("lightsabers"), "sfx_saber_swing");
+            PrefabManager.RegisterPrefab(PrefabManager.RegisterAssetBundle("lightsabers"), "sfx_saber_hit");
+
             /* Add SaberCrystals */
-            SaberCrystal_Green = new Item("lightsabers", "SaberCrystal_Green");
+            Item SaberCrystal_Green = new Item("lightsabers", "SaberCrystal_Green");
             SaberCrystal_Green.Crafting.Add(CraftingTable.Forge, 3);
             SaberCrystal_Green.RequiredItems.Add("Crystal", 50);
             SaberCrystal_Green.CraftAmount = 1;
 
-            SaberCrystal_Red = new Item("lightsabers", "SaberCrystal_Red");
+            Item SaberCrystal_Red = new Item("lightsabers", "SaberCrystal_Red");
             SaberCrystal_Red.Crafting.Add(CraftingTable.Forge, 3);
             SaberCrystal_Red.RequiredItems.Add("Crystal", 50);
             SaberCrystal_Red.CraftAmount = 1;
 
 
-            SaberCrystal_Dark = new Item("lightsabers", "SaberCrystal_Dark");
+            Item SaberCrystal_Dark = new Item("lightsabers", "SaberCrystal_Dark");
             SaberCrystal_Dark.Crafting.Add(CraftingTable.Forge, 3);
             SaberCrystal_Dark.RequiredItems.Add("Crystal", 50);
             SaberCrystal_Dark.CraftAmount = 1;
 
 
-            SaberCrystal_Blue = new Item("lightsabers", "SaberCrystal_Blue");
+            Item SaberCrystal_Blue = new Item("lightsabers", "SaberCrystal_Blue");
             SaberCrystal_Blue.Crafting.Add(CraftingTable.Forge, 3);
             SaberCrystal_Blue.RequiredItems.Add("Crystal", 50);
             SaberCrystal_Blue.CraftAmount = 1;
 
 
-            SaberCrystal_Purple = new Item("lightsabers", "SaberCrystal_Purple");
+            Item SaberCrystal_Purple = new Item("lightsabers", "SaberCrystal_Purple");
             SaberCrystal_Purple.Crafting.Add(CraftingTable.Forge, 3);
             SaberCrystal_Purple.RequiredItems.Add("Crystal", 50);
             SaberCrystal_Purple.CraftAmount = 1;
 
 
-            SaberCrystal_Pink = new Item("lightsabers", "SaberCrystal_Pink");
+            Item SaberCrystal_Pink = new Item("lightsabers", "SaberCrystal_Pink");
             SaberCrystal_Pink.Crafting.Add(CraftingTable.Forge, 3);
             SaberCrystal_Pink.RequiredItems.Add("Crystal", 50);
             SaberCrystal_Pink.CraftAmount = 1;
 
 
-            SaberCrystal_Orange = new Item("lightsabers", "SaberCrystal_Orange");
+            Item SaberCrystal_Orange = new Item("lightsabers", "SaberCrystal_Orange");
             SaberCrystal_Orange.Crafting.Add(CraftingTable.Forge, 3);
             SaberCrystal_Orange.RequiredItems.Add("Crystal", 50);
             SaberCrystal_Orange.CraftAmount = 1;
 
 
-            SaberRed = new Item("lightsabers", "LightSaber_Red");
+            Item SaberRed = new Item("lightsabers", "LightSaber_Red");
             SaberRed.Crafting.Add(CraftingTable.Forge, 3);
             SaberRed.RequiredItems.Add("SaberCrystal_Red", 20);
             SaberRed.RequiredItems.Add("Silver", 40);
@@ -107,8 +111,9 @@ namespace LightSabers
             SaberRed.RequiredUpgradeItems.Add("Silver",
                 10); // 10 Silver: You need 10 silver for level 2, 20 silver for level 3, 30 silver for level 4
             SaberRed.CraftAmount = 1;
+            SaberRed.GenerateWeaponConfigs = true;
 
-            SaberGreen = new Item("lightsabers", "LightSaber_Green");
+            Item SaberGreen = new Item("lightsabers", "LightSaber_Green");
             SaberGreen.Crafting.Add(CraftingTable.Forge, 3);
             SaberGreen.RequiredItems.Add("SaberCrystal_Green", 20);
             SaberGreen.RequiredItems.Add("Silver", 40);
@@ -117,8 +122,9 @@ namespace LightSabers
             SaberGreen.RequiredUpgradeItems.Add("Silver",
                 10); // 10 Silver: You need 10 silver for level 2, 20 silver for level 3, 30 silver for level 4
             SaberGreen.CraftAmount = 1;
+            SaberGreen.GenerateWeaponConfigs = true;
 
-            SaberDark = new Item("lightsabers", "LightSaber_Dark");
+            Item SaberDark = new Item("lightsabers", "LightSaber_Dark");
             SaberDark.Crafting.Add(CraftingTable.Forge, 3);
             SaberDark.RequiredItems.Add("SaberCrystal_Dark", 20);
             SaberDark.RequiredItems.Add("Silver", 40);
@@ -127,8 +133,9 @@ namespace LightSabers
             SaberDark.RequiredUpgradeItems.Add("Silver",
                 10); // 10 Silver: You need 10 silver for level 2, 20 silver for level 3, 30 silver for level 4
             SaberDark.CraftAmount = 1;
+            SaberDark.GenerateWeaponConfigs = true;
 
-            SaberBlue = new Item("lightsabers", "LightSaber_Blue");
+            Item SaberBlue = new Item("lightsabers", "LightSaber_Blue");
             SaberBlue.Crafting.Add(CraftingTable.Forge, 3);
             SaberBlue.RequiredItems.Add("SaberCrystal_Blue", 20);
             SaberBlue.RequiredItems.Add("Silver", 40);
@@ -137,8 +144,9 @@ namespace LightSabers
             SaberBlue.RequiredUpgradeItems.Add("Silver",
                 10); // 10 Silver: You need 10 silver for level 2, 20 silver for level 3, 30 silver for level 4
             SaberBlue.CraftAmount = 1;
+            SaberBlue.GenerateWeaponConfigs = true;
 
-            SaberPurple = new Item("lightsabers", "LightSaber_Purple");
+            Item SaberPurple = new Item("lightsabers", "LightSaber_Purple");
             SaberPurple.Crafting.Add(CraftingTable.Forge, 3);
             SaberPurple.RequiredItems.Add("SaberCrystal_Purple", 20);
             SaberPurple.RequiredItems.Add("Silver", 40);
@@ -147,8 +155,9 @@ namespace LightSabers
             SaberPurple.RequiredUpgradeItems.Add("Silver",
                 10); // 10 Silver: You need 10 silver for level 2, 20 silver for level 3, 30 silver for level 4
             SaberPurple.CraftAmount = 1;
+            SaberPurple.GenerateWeaponConfigs = true;
 
-            SaberPink = new Item("lightsabers", "LightSaber_Pink");
+            Item SaberPink = new Item("lightsabers", "LightSaber_Pink");
             SaberPink.Crafting.Add(CraftingTable.Forge, 3);
             SaberPink.RequiredItems.Add("SaberCrystal_Pink", 20);
             SaberPink.RequiredItems.Add("Silver", 40);
@@ -157,9 +166,9 @@ namespace LightSabers
             SaberPink.RequiredUpgradeItems.Add("Silver",
                 10); // 10 Silver: You need 10 silver for level 2, 20 silver for level 3, 30 silver for level 4
             SaberPink.CraftAmount = 1;
+            SaberPink.GenerateWeaponConfigs = true;
 
-
-            SaberOrange = new Item("lightsabers", "LightSaber_Orange");
+            Item SaberOrange = new Item("lightsabers", "LightSaber_Orange");
             SaberOrange.Crafting.Add(CraftingTable.Forge, 3);
             SaberOrange.RequiredItems.Add("SaberCrystal_Orange", 20);
             SaberOrange.RequiredItems.Add("Silver", 40);
@@ -168,35 +177,7 @@ namespace LightSabers
             SaberOrange.RequiredUpgradeItems.Add("Silver",
                 10); // 10 Silver: You need 10 silver for level 2, 20 silver for level 3, 30 silver for level 4
             SaberOrange.CraftAmount = 1;
-            
-            /* Damage */
-            /*baseDamage = Config.Bind("Damage", "Base Damage", 500, "");
-            baseBlunt = Config.Bind("Damage", "Base Blunt Damage", 0, "");
-            baseSlash = Config.Bind("Damage", "Base Slash Damage", 0, "");
-            basePierce = Config.Bind("Damage", "Base Pierce Damage", 0, "");
-            baseChop = Config.Bind("Damage", "Base Chop Damage", 0, "");
-            basePickaxe = Config.Bind("Damage", "Base Pickaxe Damage", 0, "");
-            baseFire = Config.Bind("Damage", "Base Fire Damage", 500, "");
-            baseFrost = Config.Bind("Damage", "Base Frost Damage", 0, "");
-            baseLightning = Config.Bind("Damage", "Base Lightning Damage", 500, "");
-            basePoison = Config.Bind("Damage", "Base Poison Damage", 0, "");
-            baseSpirit = Config.Bind("Damage", "Base Spirit Damage", 0, "");
-            baseDamagePerPerLevel = Config.Bind("Damage", "Base Damage Per Level", 50, "");
-            baseBluntPerLevel = Config.Bind("Damage", "Base Blunt Damage Per Level", 100, "");
-            baseSlashPerLevel = Config.Bind("Damage", "Base Slash Damage Per Level", 0, "");
-            basePiercePerLevel = Config.Bind("Damage", "Base Pierce Damage Per Level", 0, "");
-            baseChopPerLevel = Config.Bind("Damage", "Base Chop Damage Per Level", 0, "");
-            basePickaxePerLevel = Config.Bind("Damage", "Base Pickaxe Damage Per Level", 0, "");
-            baseFirePerLevel = Config.Bind("Damage", "Base Fire Damage Per Level", 50, "");
-            baseFrostPerLevel = Config.Bind("Damage", "Base Frost Damage Per Level", 0, "");
-            baseLightningPerLevel = Config.Bind("Damage", "Base Lightning Damage Per Level", 200, "");
-            basePoisonPerLevel = Config.Bind("Damage", "Base Poison Damage Per Level", 0, "");
-            baseSpiritPerLevel = Config.Bind("Damage", "Base Spirit Damage Per Level", 0, "");
-            baseAttackForce = Config.Bind("Damage", "Base Attack Force (a.k.a Knockback)", 200, "");
-            baseBlockPower = Config.Bind("Damage", "Base Block Power", 500, "");
-            baseParryForce = Config.Bind("Damage", "Base Parry Force", 20, "");
-            baseBackstab = Config.Bind("Damage", "Base Backstab Bonus", 3, "");
-            baseBackstab = Config.Bind("Durability", "Base Durability", 800, "");*/
+            SaberOrange.GenerateWeaponConfigs = true;
 
 
             localizationFile =
@@ -208,9 +189,35 @@ namespace LightSabers
             Localize();
         }
 
-        private void OnDestroy()
+        public void OnDestroy()
         {
-            _harmony?.UnpatchSelf();
+            Config.Save();
+        }
+        
+        private void SetupWatcher()
+        {
+            FileSystemWatcher watcher = new(Paths.ConfigPath, ConfigFileName);
+            watcher.Changed += ReadConfigValues;
+            watcher.Created += ReadConfigValues;
+            watcher.Renamed += ReadConfigValues;
+            watcher.IncludeSubdirectories = true;
+            watcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
+            watcher.EnableRaisingEvents = true;
+        }
+
+        private void ReadConfigValues(object sender, FileSystemEventArgs e)
+        {
+            if (!File.Exists(ConfigFileFullPath)) return;
+            try
+            {
+                LSLogger.LogDebug("ReadConfigValues called");
+                Config.Reload();
+            }
+            catch
+            {
+                LSLogger.LogError($"There was an issue loading your {ConfigFileName}");
+                LSLogger.LogError("Please check your config entries for spelling and format!");
+            }
         }
 
         [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
@@ -222,7 +229,7 @@ namespace LightSabers
                  than what it sounds like in Unity. */
                 GameObject saberhit = ZNetScene.instance.GetPrefab("sfx_saber_hit");
                 GameObject saberswing = ZNetScene.instance.GetPrefab("sfx_saber_swing");
-                
+
                 try
                 {
                     saberhit.GetComponentInChildren<AudioSource>().outputAudioMixerGroup =
@@ -237,56 +244,6 @@ namespace LightSabers
                 }
             }
         }
-
-
-        /*[HarmonyPatch(typeof(ZNet), nameof(ZNet.OnNewConnection))]
-        private static class Sabers_SyncConfigDamage
-        {
-            private static void Postfix()
-            {
-                InitDamageValues(SaberGreen.Prefab.GetComponent<ItemDrop>());
-                InitDamageValues(SaberRed.Prefab.GetComponent<ItemDrop>());
-                InitDamageValues(SaberDark.Prefab.GetComponent<ItemDrop>());
-                InitDamageValues(SaberBlue.Prefab.GetComponent<ItemDrop>());
-                InitDamageValues(SaberPurple.Prefab.GetComponent<ItemDrop>());
-                InitDamageValues(SaberPink.Prefab.GetComponent<ItemDrop>());
-                InitDamageValues(SaberOrange.Prefab.GetComponent<ItemDrop>());
-            }
-        }
-
-        private static void InitDamageValues(ItemDrop item)
-        {
-            ItemDrop? itmdrop = item;
-            //LSLogger.LogDebug($"Setting damage values for {itmdrop.gameObject.name}");
-            itmdrop.m_itemData.m_shared.m_damages.m_damage = baseDamage.Value;
-            itmdrop.m_itemData.m_shared.m_toolTier = baseBlunt.Value;
-            itmdrop.m_itemData.m_shared.m_damages.m_blunt = baseBlunt.Value;
-            itmdrop.m_itemData.m_shared.m_damages.m_slash = baseSlash.Value;
-            itmdrop.m_itemData.m_shared.m_damages.m_pierce = basePierce.Value;
-            itmdrop.m_itemData.m_shared.m_damages.m_chop = baseChop.Value;
-            itmdrop.m_itemData.m_shared.m_damages.m_pickaxe = basePickaxe.Value;
-            itmdrop.m_itemData.m_shared.m_damages.m_fire = baseFire.Value;
-            itmdrop.m_itemData.m_shared.m_damages.m_frost = baseFrost.Value;
-            itmdrop.m_itemData.m_shared.m_damages.m_lightning = baseLightning.Value;
-            itmdrop.m_itemData.m_shared.m_damages.m_poison = basePoison.Value;
-            itmdrop.m_itemData.m_shared.m_damages.m_spirit = baseSpirit.Value;
-            itmdrop.m_itemData.m_shared.m_damagesPerLevel.m_damage = baseDamagePerPerLevel.Value;
-            itmdrop.m_itemData.m_shared.m_damagesPerLevel.m_blunt = baseBluntPerLevel.Value;
-            itmdrop.m_itemData.m_shared.m_damagesPerLevel.m_slash = baseSlashPerLevel.Value;
-            itmdrop.m_itemData.m_shared.m_damagesPerLevel.m_pierce = basePiercePerLevel.Value;
-            itmdrop.m_itemData.m_shared.m_damagesPerLevel.m_chop = baseChopPerLevel.Value;
-            itmdrop.m_itemData.m_shared.m_damagesPerLevel.m_pickaxe = basePickaxePerLevel.Value;
-            itmdrop.m_itemData.m_shared.m_damagesPerLevel.m_fire = baseFirePerLevel.Value;
-            itmdrop.m_itemData.m_shared.m_damagesPerLevel.m_frost = baseFrostPerLevel.Value;
-            itmdrop.m_itemData.m_shared.m_damagesPerLevel.m_lightning = baseLightningPerLevel.Value;
-            itmdrop.m_itemData.m_shared.m_damagesPerLevel.m_poison = basePoisonPerLevel.Value;
-            itmdrop.m_itemData.m_shared.m_damagesPerLevel.m_spirit = baseSpiritPerLevel.Value;
-            itmdrop.m_itemData.m_shared.m_attackForce = baseAttackForce.Value;
-            itmdrop.m_itemData.m_shared.m_blockPower = baseBlockPower.Value;
-            itmdrop.m_itemData.m_shared.m_deflectionForce = baseParryForce.Value;
-            itmdrop.m_itemData.m_shared.m_backstabBonus = baseBackstab.Value;
-            itmdrop.m_itemData.m_durability = baseDurability.Value;
-        }*/
 
         private void Localize()
         {
@@ -344,38 +301,37 @@ namespace LightSabers
         }
 
 
-        #region Configs
-        /*public static ConfigEntry<bool>? _serverConfigLocked;
-        /* Damage #1#
-        private static ConfigEntry<int> baseDamage;
-        private static ConfigEntry<int> baseBlunt;
-        private static ConfigEntry<int> baseSlash;
-        private static ConfigEntry<int> basePierce;
-        private static ConfigEntry<int> baseChop;
-        private static ConfigEntry<int> basePickaxe;
-        private static ConfigEntry<int> baseFire;
-        private static ConfigEntry<int> baseFrost;
-        private static ConfigEntry<int> baseLightning;
-        private static ConfigEntry<int> basePoison;
-        private static ConfigEntry<int> baseSpirit;
-        private static ConfigEntry<int> baseDamagePerPerLevel;
-        private static ConfigEntry<int> baseBluntPerLevel;
-        private static ConfigEntry<int> baseSlashPerLevel;
-        private static ConfigEntry<int> basePiercePerLevel;
-        private static ConfigEntry<int> baseChopPerLevel;
-        private static ConfigEntry<int> basePickaxePerLevel;
-        private static ConfigEntry<int> baseFirePerLevel;
-        private static ConfigEntry<int> baseFrostPerLevel;
-        private static ConfigEntry<int> baseLightningPerLevel;
-        private static ConfigEntry<int> basePoisonPerLevel;
-        private static ConfigEntry<int> baseSpiritPerLevel;
-        private static ConfigEntry<int> baseAttackForce;
-        private static ConfigEntry<int> baseBlockPower; // block power
-        private static ConfigEntry<int> baseParryForce; // parry force
-        public static ConfigEntry<int> baseKnockbackForce; // knockback force
-        private static ConfigEntry<int> baseBackstab; // backstab
-        private static ConfigEntry<int> baseDurability;*/
-        
+        #region ConfigOptions
+
+        private static ConfigEntry<bool>? _serverConfigLocked = null!;
+
+        private ConfigEntry<T> config<T>(string group, string name, T value, ConfigDescription description,
+            bool synchronizedSetting = true)
+        {
+            ConfigDescription extendedDescription =
+                new(
+                    description.Description +
+                    (synchronizedSetting ? " [Synced with Server]" : " [Not Synced with Server]"),
+                    description.AcceptableValues, description.Tags);
+            ConfigEntry<T> configEntry = Config.Bind(group, name, value, extendedDescription);
+            //var configEntry = Config.Bind(group, name, value, description);
+
+            SyncedConfigEntry<T> syncedConfigEntry = configSync.AddConfigEntry(configEntry);
+            syncedConfigEntry.SynchronizedConfig = synchronizedSetting;
+
+            return configEntry;
+        }
+
+        private ConfigEntry<T> config<T>(string group, string name, T value, string description,
+            bool synchronizedSetting = true)
+        {
+            return config(group, name, value, new ConfigDescription(description), synchronizedSetting);
+        }
+
+        private class ConfigurationManagerAttributes
+        {
+            public bool? Browsable = false;
+        }
 
         #endregion
     }
