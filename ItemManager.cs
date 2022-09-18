@@ -166,7 +166,7 @@ public class Item
     public int MaximumRequiredStationLevel = int.MaxValue;
 
     [Description("Toggles whether or not to generate the weapon configurations for damage values.")]
-    public bool GenerateWeaponConfigs = true;
+    public bool GenerateWeaponConfigs = false;
 
     public Dictionary<string, ItemRecipe> Recipes = new();
 

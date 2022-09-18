@@ -53,7 +53,7 @@ namespace LightSabers
 
         public void Awake()
         {
-            _serverConfigLocked = Config.Bind("General", "Force Server Config", true, "Force Server Config");
+            _serverConfigLocked = Config.Bind("1 - General", "Force Server Config", true, "Force Server Config");
             _ = configSync.AddLockingConfigEntry(_serverConfigLocked);
 
             /* Add SFX */
