@@ -68,6 +68,9 @@
         <Reference Include="BepInEx">
             <HintPath>$(GamePath)\BepInEx\core\BepInEx.dll</HintPath>
         </Reference>
+        <Reference Include="KeyManager">
+          <HintPath>Libs\KeyManager.dll</HintPath>
+        </Reference>
         <Reference Include="ServerSync">
             <HintPath>Libs\ServerSync.dll</HintPath>
         </Reference>
@@ -107,6 +110,10 @@
         <EmbeddedResource Include="assets\lightsabers" />
     </ItemGroup>
     <ItemGroup>
+        <Content Include="ILRepack.targets" />
+        <Content Include="Libs\KeyManager.dll">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
         <Content Include="Libs\ServerSync.dll">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
@@ -126,5 +133,9 @@
     <Target Name="AfterBuild">
     </Target>
     -->
+    <UsingTask AssemblyFile="Libs\KeyManager.dll" TaskName="KeyManager.Seal" />
+    <Target Name="KeyManager" AfterTargets="ILRepack">
+        <Seal DLL="$(TargetPath)" />
+    </Target>
 
 </Project>

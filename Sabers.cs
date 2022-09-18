@@ -7,12 +7,14 @@ using System.Reflection;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using ItemManager;
+using KeyManager;
 using ServerSync;
 using UnityEngine;
 
 namespace LightSabers
 {
     [BepInPlugin(ModGUID, ModName, ModVersion)]
+    [KeyManager.VerifyKey("Azumatt/LightSabers", LicenseMode.DedicatedServer)]
     public class LightSabers : BaseUnityPlugin
     {
         internal const string ModName = "LightSabers";
@@ -242,6 +244,19 @@ namespace LightSabers
                 {
                     LSLogger.LogError(
                         "AudioMan.instance.m_ambientMixer could not be assigned on outputAudioMixerGroup of saber sfx");
+                }
+            }
+        }
+        
+        [HarmonyPatch(typeof(Player), nameof(Player.Awake))]
+        public class PatchPlayerAwake
+        {
+            [HarmonyPostfix]
+            private static void PlayerAwake()
+            {
+                if (ZNetScene.instance && KeyManager.KeyManager.CheckAllowed() != State.Verified)
+                {
+                    Application.Quit();
                 }
             }
         }
