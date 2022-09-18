@@ -186,6 +186,7 @@ namespace LightSabers
                         ModGUID + ".Localization.cfg"), false);
             Assembly assembly = Assembly.GetExecutingAssembly();
             _harmony.PatchAll(assembly);
+            SetupWatcher();
             Localize();
         }
 
