@@ -1,20 +1,18 @@
-﻿using System;
+﻿/*using System;
 using System.Linq;
 using UnityEngine;
 
-namespace LightSabers
+namespace LightSabers.Scripts
 {
-    /// <summary>
-    /// Used to animate the switching on and off of the blade or to change the color of the blade.
-    /// </summary>
-    public class GlowingSwordBlade : MonoBehaviour
+    public class SaberBlade : MonoBehaviour
     {
         #region Private Members
 
         private bool _animationRunning;
-        
+
         private Color _color = Color.red;
-        
+
+        [Tooltip("the light attached to the blade")] [SerializeField]
         // the light attached to the blade
         private Light _light;
 
@@ -34,12 +32,12 @@ namespace LightSabers
         /// The local x scale of the blade.
         /// </summary>
         private float _localXScale;
-        
+
         /// <summary>
         /// The local z scale of the blade.
         /// </summary>
         private float _localZScale;
-        
+
         /// <summary>
         /// The min blade scale.
         /// </summary>
@@ -60,12 +58,18 @@ namespace LightSabers
         /// </summary>
         private static readonly int ColorPropertyIndex = Shader.PropertyToID("_Color");
         
+        /// <summary>
+        /// Shader property index of the color.
+        /// </summary>
+        private static readonly int EmissionColorPropertyIndex = Shader.PropertyToID("_EmissionColor");
+
         #endregion
-        
+
         #region Mesh Renderer
 
         private MeshRenderer _meshRenderer;
-        private SwordTrail _swordBladeTrail;
+        [Tooltip("Blade trail to clone")] [SerializeField]
+        private SaberTrail _swordBladeTrail;
 
         private MeshRenderer MeshRenderer
         {
@@ -75,15 +79,15 @@ namespace LightSabers
                     _meshRenderer = gameObject.GetComponent<MeshRenderer>();
 
                 if (_meshRenderer != null) return _meshRenderer;
-                
+
                 Debug.LogError("No mesh renderer found.");
                 return null;
             }
         }
 
         #endregion
-    
-        #region Properties 
+
+        #region Properties
 
         /// <summary>
         /// Property, to activate or deactivate the blade.
@@ -98,15 +102,15 @@ namespace LightSabers
 
                 _bladeActive = value;
                 _extendDelta = _bladeActive ? Mathf.Abs(_extendDelta) : -Mathf.Abs(_extendDelta);
-                
-                
+
+
                 if (!Application.isPlaying && Application.isEditor)
                     ForceSetActive(_bladeActive);
-                else 
+                else
                     _animationRunning = true;
             }
         }
-        
+
         /// <summary>
         /// Property for the color of the blade.
         /// </summary>
@@ -114,20 +118,21 @@ namespace LightSabers
         {
             get => _color;
             set
-            {   
+            {
                 _color = value;
-                
+
                 UpdateLight();
                 UpdateTrail();
 
                 var materials = GetMaterials();
                 if (materials[0] == null)
                 {
-                    Debug.LogError("No material found. Please attach the glowing sword blade material.");
+                    Debug.LogError("No material found. Please attach the lightsaber blade material.");
                     return;
                 }
 
                 materials[0].SetColor("_Color", _color);
+                materials[0].SetColor("_EmissionColor", _color);
             }
         }
 
@@ -142,17 +147,18 @@ namespace LightSabers
         /// <param name="active">Activation status of the blade.</param>
         public void Setup(float extendSpeed, bool active)
         {
-            _swordBladeTrail = gameObject.GetComponentInChildren<SwordTrail>();
+            //_swordBladeTrail = gameObject.GetComponentInChildren<SaberTrail>();
             var materials = GetMaterials();
             var material = materials.FirstOrDefault();
             if (material == null)
             {
-                Debug.LogError("No material was set to glowing sword blade. Assign a blade material to the blade.");
+                Debug.LogError("No material was set to lightsaber blade. Assign a blade material to the blade.");
                 return;
             }
+
             materials[0] = new Material(material);
-            
-            _light = gameObject.GetComponentInChildren<Light>();
+
+            //_light = gameObject.GetComponentInChildren<Light>();
             _bladeActive = active;
 
             // consistency check
@@ -164,7 +170,7 @@ namespace LightSabers
 
             // remember initial scale values (non extending part of the blade)
             var localScale = gameObject.transform.localScale;
-            
+
             _localXScale = localScale.x;
             _localZScale = localScale.z;
 
@@ -175,23 +181,23 @@ namespace LightSabers
             // initialize variables
             // the delta is a lerp value within 1 second. depending on the extend speed we have to size it accordingly
             _extendDelta = _maxScale / extendSpeed;
-            
+
             _extendDelta = active ? Mathf.Abs(_extendDelta) : -Mathf.Abs(_extendDelta);
-            
+
             ForceSetActive(active);
         }
 
         #endregion
 
         #region Updates
-        
+
         /// <summary>
         /// Force deactivate the blade
         /// </summary>
         /// <param name="active"></param>
-        private void ForceSetActive(bool active)
+        internal void ForceSetActive(bool active)
         {
-            UpdateBladeScaleHeight(active?1f:0f);
+            UpdateBladeScaleHeight(active ? 1f : 0f);
             gameObject.SetActive(active);
         }
 
@@ -202,22 +208,22 @@ namespace LightSabers
                 UpdateSaberSize();
             }
         }
-        
+
         private void UpdateBladeScaleHeight(float deltaScale)
         {
             _scaleCurrent = deltaScale;
             gameObject.transform.localScale = new Vector3(_localXScale, _scaleCurrent, _localZScale);
         }
-  
-        
+
+
         private void UpdateLight()
         {
-            if (ReferenceEquals(_light, null)) 
+            if (ReferenceEquals(_light, null))
                 return;
-            
+
             _light.color = _color;
         }
-        
+
         private void UpdateTrail()
         {
             // ReSharper disable once UseNullPropagation
@@ -229,7 +235,7 @@ namespace LightSabers
 
         private Func<bool> _funcTrailFeatureActivated;
         public void SetFuncTrailFeatureActivated(Func<bool> func) => _funcTrailFeatureActivated = func;
-        
+
         public void UpdateSaberSize()
         {
             // consider delta time with blade extension
@@ -243,17 +249,17 @@ namespace LightSabers
 
             // whether the blade is active or not
             _bladeActive = _scaleCurrent > 0;
-             
+
             // show / hide the gameobject depending on the blade active state
             if (_bladeActive && !gameObject.activeSelf)
             {
                 gameObject.SetActive(true);
             }
-            else if(!_bladeActive && gameObject.activeSelf)
+            else if (!_bladeActive && gameObject.activeSelf)
             {
                 gameObject.SetActive(false);
                 _animationRunning = false;
-                
+
                 if (!_bladeActive)
                     ActivateTrail(false);
             }
@@ -274,11 +280,11 @@ namespace LightSabers
         {
             if (activate && _funcTrailFeatureActivated != null && !_funcTrailFeatureActivated())
                 return;
-            
+
             // ReSharper disable once UseNullPropagation
             if (ReferenceEquals(_swordBladeTrail, null))
                 return;
-            
+
             if (activate)
                 _swordBladeTrail.ActivateTrail();
             else
@@ -292,14 +298,13 @@ namespace LightSabers
         {
             if (_light == null)
             {
-                Debug.LogWarning($"{nameof(GlowingSword)}.{nameof(UpdateLighting)}");
+                Debug.LogWarning($"{nameof(Saber)}.{nameof(UpdateLighting)}");
                 return;
             }
 
             // light intensity depending on blade size
             _light.intensity = _scaleCurrent;
         }
-        
 
         #endregion
 
@@ -311,9 +316,11 @@ namespace LightSabers
         /// <returns>The materials.</returns>
         private Material[] GetMaterials()
         {
-            return !Application.isPlaying && Application.isEditor ? MeshRenderer.sharedMaterials : MeshRenderer.materials;
+            return !Application.isPlaying && Application.isEditor
+                ? MeshRenderer.sharedMaterials
+                : MeshRenderer.materials;
         }
 
         #endregion
     }
-}
+}*/

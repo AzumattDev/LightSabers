@@ -18,7 +18,7 @@ namespace LightSabers
     public class LightSabers : BaseUnityPlugin
     {
         internal const string ModName = "LightSabers";
-        internal const string ModVersion = "1.1.0";
+        internal const string ModVersion = "1.2.0";
         internal const string Author = "Azumatt";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -26,7 +26,7 @@ namespace LightSabers
         private readonly Harmony _harmony = new(ModGUID);
         internal static string ConnectionError = "";
         internal static readonly ManualLogSource LSLogger = BepInEx.Logging.Logger.CreateLogSource(ModName);
-        private ConfigFile localizationFile;
+        private ConfigFile _localizationFile = null!;
 
         /* Items */
         // SaberGreen;
@@ -113,7 +113,6 @@ namespace LightSabers
             SaberRed.RequiredUpgradeItems.Add("Silver",
                 10); // 10 Silver: You need 10 silver for level 2, 20 silver for level 3, 30 silver for level 4
             SaberRed.CraftAmount = 1;
-            SaberRed.GenerateWeaponConfigs = true;
 
             Item SaberGreen = new Item("lightsabers", "LightSaber_Green");
             SaberGreen.Crafting.Add(CraftingTable.Forge, 3);
@@ -124,7 +123,7 @@ namespace LightSabers
             SaberGreen.RequiredUpgradeItems.Add("Silver",
                 10); // 10 Silver: You need 10 silver for level 2, 20 silver for level 3, 30 silver for level 4
             SaberGreen.CraftAmount = 1;
-            SaberGreen.GenerateWeaponConfigs = true;
+
 
             Item SaberDark = new Item("lightsabers", "LightSaber_Dark");
             SaberDark.Crafting.Add(CraftingTable.Forge, 3);
@@ -135,7 +134,6 @@ namespace LightSabers
             SaberDark.RequiredUpgradeItems.Add("Silver",
                 10); // 10 Silver: You need 10 silver for level 2, 20 silver for level 3, 30 silver for level 4
             SaberDark.CraftAmount = 1;
-            SaberDark.GenerateWeaponConfigs = true;
 
             Item SaberBlue = new Item("lightsabers", "LightSaber_Blue");
             SaberBlue.Crafting.Add(CraftingTable.Forge, 3);
@@ -146,7 +144,17 @@ namespace LightSabers
             SaberBlue.RequiredUpgradeItems.Add("Silver",
                 10); // 10 Silver: You need 10 silver for level 2, 20 silver for level 3, 30 silver for level 4
             SaberBlue.CraftAmount = 1;
-            SaberBlue.GenerateWeaponConfigs = true;
+
+            /*Item SaberBlue = new Item("azu_lightsabers", "LightSaber_Blue");
+            SaberBlue.Crafting.Add(CraftingTable.Forge, 3);
+            SaberBlue.RequiredItems.Add("SaberCrystal_Blue", 20);
+            SaberBlue.RequiredItems.Add("Silver", 40);
+            SaberBlue.RequiredUpgradeItems.Add("Iron",
+                20); // Upgrade requirements are per item, even if you craft two at the same time
+            SaberBlue.RequiredUpgradeItems.Add("Silver",
+                10); // 10 Silver: You need 10 silver for level 2, 20 silver for level 3, 30 silver for level 4
+            SaberBlue.CraftAmount = 1;
+            SaberBlue.Snapshot();*/
 
             Item SaberPurple = new Item("lightsabers", "LightSaber_Purple");
             SaberPurple.Crafting.Add(CraftingTable.Forge, 3);
@@ -157,7 +165,6 @@ namespace LightSabers
             SaberPurple.RequiredUpgradeItems.Add("Silver",
                 10); // 10 Silver: You need 10 silver for level 2, 20 silver for level 3, 30 silver for level 4
             SaberPurple.CraftAmount = 1;
-            SaberPurple.GenerateWeaponConfigs = true;
 
             Item SaberPink = new Item("lightsabers", "LightSaber_Pink");
             SaberPink.Crafting.Add(CraftingTable.Forge, 3);
@@ -168,7 +175,6 @@ namespace LightSabers
             SaberPink.RequiredUpgradeItems.Add("Silver",
                 10); // 10 Silver: You need 10 silver for level 2, 20 silver for level 3, 30 silver for level 4
             SaberPink.CraftAmount = 1;
-            SaberPink.GenerateWeaponConfigs = true;
 
             Item SaberOrange = new Item("lightsabers", "LightSaber_Orange");
             SaberOrange.Crafting.Add(CraftingTable.Forge, 3);
@@ -179,10 +185,9 @@ namespace LightSabers
             SaberOrange.RequiredUpgradeItems.Add("Silver",
                 10); // 10 Silver: You need 10 silver for level 2, 20 silver for level 3, 30 silver for level 4
             SaberOrange.CraftAmount = 1;
-            SaberOrange.GenerateWeaponConfigs = true;
 
 
-            localizationFile =
+            _localizationFile =
                 new ConfigFile(
                     Path.Combine(Path.GetDirectoryName(Config.ConfigFilePath) ?? throw new InvalidOperationException(),
                         ModGUID + ".Localization.cfg"), false);
@@ -196,7 +201,7 @@ namespace LightSabers
         {
             Config.Save();
         }
-        
+
         private void SetupWatcher()
         {
             FileSystemWatcher watcher = new(Paths.ConfigPath, ConfigFileName);
@@ -247,7 +252,7 @@ namespace LightSabers
                 }
             }
         }
-        
+
         [HarmonyPatch(typeof(Player), nameof(Player.Awake))]
         public class PatchPlayerAwake
         {
@@ -309,7 +314,7 @@ namespace LightSabers
             if (m_localizedStrings.ContainsKey(key)) return $"${key}";
             Localization? loc = Localization.instance;
             string? langSection = loc.GetSelectedLanguage();
-            ConfigEntry<string>? configEntry = localizationFile.Bind(langSection, key, val);
+            ConfigEntry<string>? configEntry = _localizationFile.Bind(langSection, key, val);
             Localization.instance.AddWord(key, configEntry.Value);
             m_localizedStrings.Add(key, configEntry);
 

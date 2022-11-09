@@ -57,6 +57,10 @@ For Questions or Comments, find me in the Odin Plus Team Discord or in mine:
 
 # Changelog
 
+v1.2.0
+- Update ServerSync internally. Push this update a bit early by request.
+- The few of you that know I'm working on other things for this mod...those are still in the works. Hopefully I can get them out soon.
+
 v1.1.0
 
 - Upload under my own name to make it easier to find for users that use my mods. OdinPlus version is deprecated. There

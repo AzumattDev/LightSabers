@@ -1,49 +1,48 @@
-using System.Collections.Generic;
+﻿/*using System.Collections.Generic;
 using System.Linq;
-using LightSabers;
 using UnityEngine;
 
-namespace LightSabers
+namespace LightSabers.Scripts
 {
-    /// <inheritdoc />
-    /// <summary>
-    /// This script is used to control the glowing sword weapon. It is used to set the colors, deactivate, activate and more.
-    /// </summary>
-    [ExecuteInEditMode]
-    public class GlowingSword : MonoBehaviour
+    public class Saber : MonoBehaviour
     {
         #region Private Members
-        
+
         #region Serializable
-        
-        [Tooltip("Boolean value which indicates whether the glowing sword is active or inactive.")]
-        [SerializeField]
+
+        [Tooltip("Boolean value which indicates whether the lightsaber is active or inactive.")] [SerializeField]
         private bool saberActive = true;
 
         private bool _lastSaberActiveStatus;
-        
-        [Tooltip("The color of the glowing sword")]
-        [SerializeField]
+
+        [Tooltip("The color of the lightsaber")] [SerializeField]
         private Color bladeColor = Color.red;
-        
+        [Tooltip("The color of the lightsaber")] [SerializeField]
+        private Color emissionBladeColor = Color.red;
+
         private bool _lastTrailsActivated;
-        [Tooltip("Used to activate / deactivate blade trail.")]
-        [SerializeField]
+
+        [Tooltip("Used to activate / deactivate blade trail.")] [SerializeField]
         private bool trailsActivated = true;
-        
+
         #endregion
 
         #region Public Serializable Members
 
-        [Tooltip("The speed at which the blade is retracted or extended when the glowing sword is activated or deactivated.")]
+        [Tooltip(
+            "The speed at which the blade is retracted or extended when the lightsaber is activated or deactivated.")]
         public float BladeExtendSpeed = 0.3f;
         
+        [Tooltip(
+            "List of blades which hang as child in the object.")]
+        public List<SaberBlade> _blades;
+
         #endregion
-        
-        /// <summary>
+
+        /#1#// <summary>
         /// List of blades which hang as child in the object.
         /// </summary>
-        private List<GlowingSwordBlade> _blades;
+        private List<SaberBlade> _blades;#1#
 
         private Color _lastColor;
 
@@ -52,8 +51,8 @@ namespace LightSabers
         #region Properties
 
         /// <summary>
-        /// Allows you to change the color of the glowing sword.
-        /// If the color is changed, the glowing sword is updated.
+        /// Allows you to change the color of the lightsaber.
+        /// If the color is changed, the lightsaber is updated.
         /// </summary>
         public Color BladeColor
         {
@@ -64,18 +63,18 @@ namespace LightSabers
                 UpdateLightSaber();
             }
         }
-        
+
         /// <summary>
-        /// Enables or disables the glowing sword.
+        /// Enables or disables the lightsaber.
         /// If the status is changed, the
-        /// glowing sword is updated.
+        /// lightsaber is updated.
         /// </summary>
         public bool SaberActive
         {
             get => saberActive;
             set
             {
-                if (saberActive.Equals(value) 
+                if (saberActive.Equals(value)
                     && _lastSaberActiveStatus == saberActive)
                     return;
 
@@ -102,15 +101,16 @@ namespace LightSabers
                 });
             }
         }
-        
+
         #endregion
 
         #region Setup
+
         // Use this for initialization
-        private void Awake ()
+        private void Awake()
         {
             _lastUpdateTime = Time.time;
-            
+
             if (FindSetupBlades())
                 return;
 
@@ -118,13 +118,14 @@ namespace LightSabers
         }
 
         private float _lastUpdateTime;
+
         private void LateUpdate()
         {
             var currentUpdateTime = Time.time;
             if ((currentUpdateTime - _lastUpdateTime) * 1000 >= 500)
                 return;
             _lastUpdateTime = currentUpdateTime;
-            
+
             if (_lastSaberActiveStatus != saberActive)
                 SaberActive = saberActive;
 
@@ -141,13 +142,12 @@ namespace LightSabers
         /// <returns></returns>
         private bool FindSetupBlades()
         {
-            //_blades = gameObject.GetComponentsInChildren();
-            //_blades = gameObject.FindChildrenByType<GlowingSwordBlade>();
-            if (_blades != null && _blades.Any()) 
+            //_blades = gameObject.GetComponentsInChildren<SaberBlade>().ToList();
+            if (_blades.Any())
                 return false;
-            
+
             Debug.LogWarning("No light saber blades found. " +
-                             $"Please add some blade children by adding a {nameof(GlowingSwordBlade)} script." +
+                             $"Please add some blade children by adding a {nameof(SaberBlade)} script." +
                              $"The light saber Must have at least 1 blade.");
             return true;
         }
@@ -162,6 +162,7 @@ namespace LightSabers
 
             UpdateLightSaber();
         }
+
         #endregion
 
         #region Updates
@@ -172,9 +173,9 @@ namespace LightSabers
         private void UpdateColor()
         {
             bladeColor.a = Mathf.Clamp(bladeColor.a, 0.1f, 1f);
-            
+
             //Update each blade
-            _blades?.ForEach(x=>x.Color=bladeColor);
+            _blades?.ForEach(x => x.Color = bladeColor);
         }
 
         /// <summary>
@@ -183,16 +184,16 @@ namespace LightSabers
         /// </summary>
         private void UpdateBlades()
         {
-            _blades?.ForEach(glowingSwordBlade =>
+            _blades?.ForEach(SaberBlade =>
             {
-                glowingSwordBlade.BladeActive = SaberActive;
-                glowingSwordBlade.UpdateLighting();
-                glowingSwordBlade.UpdateSaberSize();
+                SaberBlade.BladeActive = SaberActive;
+                SaberBlade.UpdateLighting();
+                SaberBlade.UpdateSaberSize();
             });
         }
 
         /// <summary>
-        /// This method updates the color of the glowing sword and its blades.
+        /// This method updates the color of the lightsaber and its blades.
         /// </summary>
         public void UpdateLightSaber()
         {
@@ -208,7 +209,7 @@ namespace LightSabers
         #region Toggle
 
         /// <summary>
-        /// Toggle for activating deactivating the glowing sword.
+        /// Toggle for activating deactivating the lightsaber.
         /// </summary>
         public void ToggleActive()
         {
@@ -216,7 +217,7 @@ namespace LightSabers
         }
 
         /// <summary>
-        /// Toggle for activating deactivating the glowing sword trails.
+        /// Toggle for activating deactivating the lightsaber trails.
         /// </summary>
         public void ToggleActiveTrails()
         {
@@ -225,4 +226,4 @@ namespace LightSabers
 
         #endregion
     }
-}
+}*/

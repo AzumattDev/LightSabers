@@ -1,15 +1,14 @@
-using UnityEngine;
+﻿/*using UnityEngine;
 
-namespace LightSabers
+namespace LightSabers.Scripts
 {
-    public class SwordTrailPsHandler : MonoBehaviour
+
+    public class SaberTrailPsHandler : MonoBehaviour
     {
-        [SerializeField]
-        private ParticleSystem particleSystemTop;
-        
-        [SerializeField]
-        private ParticleSystem particleSystemBottom;
-        
+        [SerializeField] private ParticleSystem particleSystemTop;
+
+        [SerializeField] private ParticleSystem particleSystemBottom;
+
         public void UpdateColor(Color color)
         {
             ChangeColorBySpeed(color, particleSystemTop);
@@ -28,4 +27,4 @@ namespace LightSabers
             }
         }
     }
-}
+}*/
