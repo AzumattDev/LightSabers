@@ -57,6 +57,9 @@ For Questions or Comments, find me in the Odin Plus Team Discord or in mine:
 
 # Changelog
 
+v1.2.1
+- Add back the ability to change the base damage. Blaxxun's version of the ItemManager didn't have it. Sorry about that.
+
 v1.2.0
 - Update ServerSync internally. Push this update a bit early by request.
 - The few of you that know I'm working on other things for this mod...those are still in the works. Hopefully I can get them out soon.
