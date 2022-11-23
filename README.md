@@ -57,6 +57,9 @@ For Questions or Comments, find me in the Odin Plus Team Discord or in mine:
 
 # Changelog
 
+v1.2.2
+- Fix for the newest version of Valheim
+
 v1.2.1
 - Add back the ability to change the base damage. Blaxxun's version of the ItemManager didn't have it. Sorry about that.
 

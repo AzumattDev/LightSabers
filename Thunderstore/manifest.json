@@ -1,6 +1,6 @@
 {
   "name": "LightSabers",
-  "version_number": "1.2.0",
+  "version_number": "1.2.2",
   "website_url": "https://discord.gg/pdHgy6Bsng",
   "description": "Lightsabers requested by OdinPlus Community client and server (if you want to enforce config values)",
   "dependencies": [
