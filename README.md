@@ -57,6 +57,9 @@ For Questions or Comments, find me in the Odin Plus Team Discord or in mine:
 
 # Changelog
 
+v1.2.3
+- Mistlands Update
+
 v1.2.2
 - Fix for the newest version of Valheim
 
