@@ -68,9 +68,6 @@
         <Reference Include="BepInEx">
             <HintPath>$(GamePath)\BepInEx\core\BepInEx.dll</HintPath>
         </Reference>
-        <Reference Include="KeyManager">
-            <HintPath>Libs\KeyManager.dll</HintPath>
-        </Reference>
         <Reference Include="ServerSync">
             <HintPath>Libs\ServerSync.dll</HintPath>
         </Reference>
