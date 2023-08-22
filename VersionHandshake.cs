@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
 using HarmonyLib;
 
 namespace LightSabers
@@ -18,6 +22,7 @@ namespace LightSabers
             LightSabers.LSLogger.LogInfo("Invoking version check");
             ZPackage zpackage = new();
             zpackage.Write(LightSabers.ModVersion);
+            zpackage.Write(RpcHandlers.ComputeHashForMod().Replace("-", ""));
             peer.m_rpc.Invoke($"{LightSabers.ModName}_VersionCheck", zpackage);
         }
     }
@@ -37,7 +42,7 @@ namespace LightSabers
 
         private static void Postfix(ZNet __instance)
         {
-            ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.instance.GetServerPeerID(), "RequestAdminSync",
+            ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.instance.GetServerPeerID(), $"{LightSabers.ModName}RequestAdminSync",
                 new ZPackage());
         }
     }
@@ -72,17 +77,18 @@ namespace LightSabers
         public static void RPC_DaedricSet_Version(ZRpc rpc, ZPackage pkg)
         {
             string? version = pkg.ReadString();
+            string? hash = pkg.ReadString();
+
+            var hashForAssembly = ComputeHashForMod().Replace("-", "");
             LightSabers.LSLogger.LogInfo("Version check, local: " +
-                                                      LightSabers.ModVersion +
-                                                      ",  remote: " + version);
-            if (version != LightSabers.ModVersion)
+                                         LightSabers.ModVersion +
+                                         ",  remote: " + version);
+            if (hash != hashForAssembly || version != LightSabers.ModVersion)
             {
-                LightSabers.ConnectionError =
-                    $"{LightSabers.ModName} Installed: {LightSabers.ModVersion}\n Needed: {version}";
+                LightSabers.ConnectionError = $"{LightSabers.ModName} Installed: {LightSabers.ModVersion} {hashForAssembly}\n Needed: {version} {hash}";
                 if (!ZNet.instance.IsServer()) return;
                 // Different versions - force disconnect client from server
-                LightSabers.LSLogger.LogWarning(
-                    $"Peer ({rpc.m_socket.GetHostName()}) has incompatible version, disconnecting");
+                LightSabers.LSLogger.LogWarning($"Peer ({rpc.m_socket.GetHostName()}) has incompatible version, disconnecting...");
                 rpc.Invoke("Error", 3);
             }
             else
@@ -100,6 +106,21 @@ namespace LightSabers
                     ValidatedPeers.Add(rpc);
                 }
             }
+        }
+
+        public static string ComputeHashForMod()
+        {
+            using SHA256 sha256Hash = SHA256.Create();
+            // ComputeHash - returns byte array  
+            byte[] bytes = sha256Hash.ComputeHash(File.ReadAllBytes(Assembly.GetExecutingAssembly().Location));
+            // Convert byte array to a string   
+            StringBuilder builder = new();
+            foreach (byte b in bytes)
+            {
+                builder.Append(b.ToString("X2"));
+            }
+
+            return builder.ToString();
         }
     }
 }
