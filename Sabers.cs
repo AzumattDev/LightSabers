@@ -16,7 +16,7 @@ namespace LightSabers
     public class LightSabers : BaseUnityPlugin
     {
         internal const string ModName = "LightSabers";
-        internal const string ModVersion = "1.3.3";
+        internal const string ModVersion = "1.3.4";
         internal const string Author = "Azumatt";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -185,10 +185,7 @@ namespace LightSabers
             SaberOrange.CraftAmount = 1;
 
 
-            _localizationFile =
-                new ConfigFile(
-                    Path.Combine(Path.GetDirectoryName(Config.ConfigFilePath) ?? throw new InvalidOperationException(),
-                        ModGUID + ".Localization.cfg"), false);
+            _localizationFile = new ConfigFile(Path.Combine(Path.GetDirectoryName(Config.ConfigFilePath) ?? throw new InvalidOperationException(), ModGUID + ".Localization.cfg"), false);
             Assembly assembly = Assembly.GetExecutingAssembly();
             _harmony.PatchAll(assembly);
             SetupWatcher();
